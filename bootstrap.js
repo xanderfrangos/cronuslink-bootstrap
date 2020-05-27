@@ -35,8 +35,13 @@ window.cronusLinkBootstrap = {
       if (str.indexOf("#") !== -1) {
         str = str.substring(str.indexOf("#") + 1)
       }
-      var decoded = JSON.parse(window.atob(str))
-      console.table(decoded)
+      var arr = atob(str).split("|")
+      arr[1] = arr[1].split(",")
+      var decoded = {
+        isDev: arr[0],
+        ips: arr[1],
+        session: arr[2]
+      }
       return decoded
     } catch (e) {
       console.error(e)
@@ -56,7 +61,7 @@ window.cronusLinkBootstrap = {
   },
   connectionInfo: {},
   started: false,
-  connect: function (providedInfo = {}) {
+  connect: async function (providedInfo = {}) {
     var defaultInfo = {
       ip: null,
       port: 36411,
@@ -72,9 +77,20 @@ window.cronusLinkBootstrap = {
     info = Object.assign(info, providedInfo)
 
     // If no info and HTTP, switch to HTTPS for camera
-    if(!info.ip && window.location.protocol === "http:") {
+    if(!info.ip && !info.ips && window.location.protocol === "http:") {
       window.location.href = "https://cronus.link/#allowHTTPS"
       return false
+    }
+
+    // If a list of IPs was provided, scan them to see if a valid server is available
+    if(info.ips) {
+      for(let i = 0; i < info.ips.length; i++) {
+        var version = await fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(body => body.json()).catch(e => false)
+        console.log(info.ips[i] + ":", version)
+        if(version) {
+          info.ip = info.ips[i]
+        }
+      }
     }
 
     if (!window.cronusLinkBootstrap.started && info.ip) {
