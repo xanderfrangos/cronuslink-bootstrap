@@ -73,8 +73,7 @@ window.denBootstrap = {
 
     // If no info and HTTP, switch to HTTPS for camera
     if(!info.ip && window.location.protocol === "http:") {
-      window.location.protocol = "https:"
-      window.location.hash = "#allowHTTPS"
+      window.location.href = "https://cronus.link/#allowHTTPS"
       return false
     }
 
