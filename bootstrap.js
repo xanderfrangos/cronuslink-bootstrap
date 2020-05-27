@@ -71,6 +71,13 @@ window.denBootstrap = {
     }
     info = Object.assign(info, providedInfo)
 
+    // If no info and HTTP, switch to HTTPS for camera
+    if(!info.ip && window.location.protocol === "http:") {
+      window.location.protocol = "https:"
+      window.location.hash = "#allowHTTPS"
+      return false
+    }
+
     if (!window.denBootstrap.started && info.ip) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
@@ -163,6 +170,11 @@ function tick() {
           console.table(decoded)
           if (decoded && decoded.ip) {
             // Connect to server
+            if(window.location.protocol === "https:") {
+              // Switch to HTTP for connection
+              window.location.href = code.data
+              return false;
+            }
             window.denBootstrap.connect(decoded)
             // Stop loop
             scannerDone = true
