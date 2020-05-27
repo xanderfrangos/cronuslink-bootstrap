@@ -16,11 +16,11 @@ function insertStyle(url) {
   x.appendChild(s);
 }
 
-window.denBootstrap = {
+window.cronusLinkBootstrap = {
   getHashData: function () {
     try {
       if (window.location.hash && window.location.hash.length > 1) {
-        return window.denBootstrap.decodeHash(window.location.hash)
+        return window.cronusLinkBootstrap.decodeHash(window.location.hash)
       } else {
         return null
       }
@@ -44,7 +44,7 @@ window.denBootstrap = {
     }
   },
   setConnection: function (info) {
-    window.denBootstrap.connectionInfo = info
+    window.cronusLinkBootstrap.connectionInfo = info
     return localStorage.setItem('denServer', JSON.stringify(info))
   },
   getConnection: function () {
@@ -64,7 +64,7 @@ window.denBootstrap = {
       session: null
     }
 
-    var savedInfo = window.denBootstrap.getConnection()
+    var savedInfo = window.cronusLinkBootstrap.getConnection()
     var info = defaultInfo
     if (savedInfo) {
       info = Object.assign(info, savedInfo)
@@ -77,13 +77,13 @@ window.denBootstrap = {
       return false
     }
 
-    if (!window.denBootstrap.started && info.ip) {
+    if (!window.cronusLinkBootstrap.started && info.ip) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
-      window.denBootstrap.started = true
-      window.denBootstrap.setConnection(info)
-      window.denServer = info.ip
+      window.cronusLinkBootstrap.started = true
+      window.cronusLinkBootstrap.setConnection(info)
+      window.cronusLinkServer = info.ip
 
       insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css')
       insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js')
@@ -92,10 +92,10 @@ window.denBootstrap = {
   }
 }
 
-var hashData = window.denBootstrap.getHashData() // Get info from QR code
+var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
 var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
 
-window.denBootstrap.connect(connectionInfo)
+window.cronusLinkBootstrap.connect(connectionInfo)
 
 
 // QR Scanner
@@ -165,7 +165,7 @@ function tick() {
         // Invalid code
       } else {
         try {
-          var decoded = window.denBootstrap.decodeHash(code.data)
+          var decoded = window.cronusLinkBootstrap.decodeHash(code.data)
           console.table(decoded)
           if (decoded && decoded.ip) {
             // Connect to server
@@ -174,7 +174,7 @@ function tick() {
               window.location.href = code.data
               return false;
             }
-            window.denBootstrap.connect(decoded)
+            window.cronusLinkBootstrap.connect(decoded)
             // Stop loop
             scannerDone = true
             // Close camera
