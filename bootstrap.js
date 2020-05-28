@@ -73,7 +73,7 @@ window.cronusLinkBootstrap = {
       session: null
     }
 
-    console.log(i++)
+    
     var savedInfo = window.cronusLinkBootstrap.getConnection()
     var info = defaultInfo
     if (savedInfo) {
@@ -87,10 +87,10 @@ window.cronusLinkBootstrap = {
       return false
     }
 
-    console.log(i++)
+    
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips) {
-      console.log(i++)
+      
       var version = false
       for(let i = 0; i < info.ips.length; i++) {
         try {
@@ -99,7 +99,7 @@ window.cronusLinkBootstrap = {
         } catch(e) {
           console.log("Couldn't connect to IP:", e)
         }
-        console.log(i++)
+        
         
         console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
         if(version) {
@@ -107,14 +107,14 @@ window.cronusLinkBootstrap = {
           console.log("WORKING IP:", info)
         }
       }
-      console.log(i++)
+      
     }
 
     console.log("A", window.cronusLinkBootstrap.started, info.ip)
-    console.log(i++)
+    
     if (!window.cronusLinkBootstrap.started && info.ip) {
       console.log("Trying connect", info)
-      console.log(i++)
+      
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
