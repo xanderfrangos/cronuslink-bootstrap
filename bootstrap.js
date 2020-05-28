@@ -186,7 +186,7 @@ function tick() {
         try {
           var decoded = window.cronusLinkBootstrap.decodeHash(code.data)
           console.table(decoded)
-          if (decoded && decoded.ip) {
+          if (decoded && decoded.ips) {
             // Connect to server
             if(window.location.protocol === "https:") {
               // Switch to HTTP for connection
