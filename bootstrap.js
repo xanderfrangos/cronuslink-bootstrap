@@ -91,7 +91,7 @@ window.cronusLinkBootstrap = {
 
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips) {
-      window.cronusLinkBootstrap.setScreen("cantconnect")
+      window.cronusLinkBootstrap.setScreen("loading")
       for(let i = 0; i < info.ips.length; i++) {
         var version = false
         try {
