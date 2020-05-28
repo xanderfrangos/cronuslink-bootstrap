@@ -3,8 +3,7 @@
 
 <head>
   <script>
-    if (window.location.protocol === "https:" && window.location.hash.indexOf("allowHTTPS") === -1) window.location
-      .href = window.location.href.replace("https:", "http:");
+    if (window.location.host != "localhost" && window.locationwindow.location.protocol === "https:" && window.location.hash.indexOf("allowHTTPS") === -1) window.location.href = window.location.href.replace("https:", "http:");
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, user-scalable=no" />
@@ -101,8 +100,7 @@
       <div class="screen qr">
         <div id="qr">
           <div id="loadingMessage">
-            <p>This device is not currently linked to a PC. Please start the QR scanner below with the QR code generated
-              on your PC's Cronus Link app.</p>
+            <p>This device is not currently linked to a PC. Please start the QR scanner below with the QR code generated on your PC's Cronus Link app.</p>
             <div id="qrStart">Scan QR Code</div>
           </div>
           <canvas id="canvas" hidden></canvas>
@@ -112,7 +110,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="screen loading">
         Loading...
       </div>

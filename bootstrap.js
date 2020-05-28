@@ -129,12 +129,15 @@ window.cronusLinkBootstrap = {
   }
 }
 
-var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
-var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
-history.replaceState({}, document.title, ".") // Remove hash if it was used
-
-window.cronusLinkBootstrap.connect(connectionInfo)
-
+if(window.location.hash != "#allowHTTPS") {
+  var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
+  var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
+  history.replaceState({}, document.title, ".") // Remove hash if it was used
+  
+  window.cronusLinkBootstrap.connect(connectionInfo)
+} else {
+  window.cronusLinkBootstrap.setScreen("qr")
+}
 
 // QR Scanner
 
@@ -241,6 +244,10 @@ document.querySelector("#qrStart").addEventListener("click", function () {
   startScanner()
 })
 document.querySelector(".bootstrap-qrScreen").addEventListener("click", function () {
-  window.location.href = "https://cronus.link/#allowHTTPS"
+  if(window.location.protocol != "https") {
+    window.location.href = "https://cronus.link/#allowHTTPS"
+  } else {
+    window.cronusLinkBootstrap.setScreen("qr")
+  }
 })
 
