@@ -95,9 +95,13 @@ window.cronusLinkBootstrap = {
           console.log("Couldn't connect to IP:", e)
         }
         
-        console.log(info.ips[i] + ":", version)
+        console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
         if(version) {
           info.ip = info.ips[i]
+        } else {
+          // Couldn't find a working IP
+          window.location.href = "https://cronus.link/#allowHTTPS"
+          return false
         }
       }
     }
