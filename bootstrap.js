@@ -63,8 +63,6 @@ window.cronusLinkBootstrap = {
   connectionInfo: {},
   started: false,
   connect: async function (providedInfo = {}) {
-    console.log("connect", providedInfo)
-    let i = 0
     var defaultInfo = {
       ip: null,
       ips: [],
@@ -73,7 +71,6 @@ window.cronusLinkBootstrap = {
       session: null
     }
 
-    
     var savedInfo = window.cronusLinkBootstrap.getConnection()
     var info = defaultInfo
     if (savedInfo) {
@@ -87,34 +84,28 @@ window.cronusLinkBootstrap = {
       return false
     }
 
-    
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips) {
-      
-      var version = false
       for(let i = 0; i < info.ips.length; i++) {
+        var version = false
         try {
-          var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v").catch(e => false)
-          version = await response.json().catch(e => false)
+          var response = await new Promise((resolve, reject) => {
+            setTimeout(reject, 3000)
+            fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(result => resolve(result))
+          })
+          version = await response.json()
         } catch(e) {
           console.log("Couldn't connect to IP:", e)
         }
         
-        
         console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
         if(version) {
           info.ip = info.ips[i]
-          console.log("WORKING IP:", info)
         }
       }
-      
     }
 
-    console.log("A", window.cronusLinkBootstrap.started, info.ip)
-    
     if (!window.cronusLinkBootstrap.started && info.ip) {
-      console.log("Trying connect", info)
-      
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
@@ -135,9 +126,9 @@ window.cronusLinkBootstrap = {
 
 var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
 var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
+history.replaceState({}, document.title, ".") // Remove hash if it was used
 
 window.cronusLinkBootstrap.connect(connectionInfo)
-//history.replaceState({}, document.title, ".") // Remove hash if it was used
 
 
 // QR Scanner
