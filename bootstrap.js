@@ -125,9 +125,9 @@ window.cronusLinkBootstrap = {
 
 var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
 var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
-history.replaceState({}, document.title, ".") // Remove hash if it was used
 
 window.cronusLinkBootstrap.connect(connectionInfo)
+history.replaceState({}, document.title, ".") // Remove hash if it was used
 
 
 // QR Scanner
