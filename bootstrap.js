@@ -79,31 +79,27 @@ window.cronusLinkBootstrap = {
     info = Object.assign(info, providedInfo)
 
     // If no info and HTTP, switch to HTTPS for camera
-    if (!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:") {
+    if(!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:") {
       window.location.href = "https://cronus.link/#allowHTTPS"
       return false
     }
 
     // If a list of IPs was provided, scan them to see if a valid server is available
-    if (info.ips) {
-      for (let i = 0; i < info.ips.length; i++) {
-        var version = false
+    if(info.ips) {
+      var version = false
+      for(let i = 0; i < info.ips.length; i++) {
         try {
           var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v")
           version = await response.json()
-        } catch (e) {
+        } catch(e) {
           console.log("Couldn't connect to IP:", e)
         }
-      }
-
-      console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
-      if (version) {
-        info.ip = info.ips[i]
-        console.log("WORKING IP:", info)
-      } else {
-        // Couldn't find a working IP
-        window.location.href = "https://cronus.link/#allowHTTPS"
-        return false
+        
+        console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
+        if(version) {
+          info.ip = info.ips[i]
+          console.log("WORKING IP:", info)
+        }
       }
     }
 
@@ -120,6 +116,10 @@ window.cronusLinkBootstrap = {
       insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css')
       insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js')
       document.getElementById("bootstrap").classList.add("done")
+    } else {
+      // Couldn't find a working IP
+      window.location.href = "https://cronus.link/#allowHTTPS"
+      return false
     }
   }
 }
@@ -202,7 +202,7 @@ function tick() {
           console.table(decoded)
           if (decoded && decoded.ips) {
             // Connect to server
-            if (window.location.protocol === "https:") {
+            if(window.location.protocol === "https:") {
               // Switch to HTTP for connection
               window.location.href = code.data
               return false;
