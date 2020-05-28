@@ -40,7 +40,7 @@
               text-align: center;
             }
 
-            #qr {
+            #bootstrap-screens {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -51,9 +51,11 @@
                 justify-content: center;
                 align-items: center;
                 background: white;
+                overflow: auto;
             }
-            #qr .inner {
+            .screen {
                 max-width: 640px;
+                display:none;
             }
             #qrStart {
                 background: black;
@@ -64,17 +66,20 @@
             #bootstrap.done {
                 display: none;
             }
+            #bootstrap-screens[data-screen="qr"] .screen.qr { display:block; }
+            #bootstrap-screens[data-screen="loading"] .screen.loading { display:block; }
+            #bootstrap-screens[data-screen="invalid"] .screen.qr { invalidsplay:block; }
+            #bootstrap-screens[data-screen="cantconnect"] .screen.cantconnect { display:block; }
         </style>
         <script src="./jsQR.js"></script>
     </head>
     <body>
         <div id="app"></div>
         <div id="bootstrap">
-            <div id="qr">
-                <div class="inner">
-
-
-                    
+          <div id="bootstrap-screens">
+            
+            <div class="screen qr">
+              <div id="qr">
                 <div id="loadingMessage">
                     <p>This device is not currently linked to a PC. Please start the QR scanner below with the QR code generated on your PC's Cronus Link app.</p>
                     <div id="qrStart">Scan QR Code</div></div>
@@ -83,11 +88,27 @@
                     <div id="outputMessage">No QR code detected.</div>
                     <div hidden><b>QR code detected</b> <span style="display:none" id="outputData"></span></div>
                 </div>
-
-
-
-                </div>
             </div>
+
+            <div class="screen loading">
+              Loading...
+            </div>
+
+            <div class="screen cantconnect">
+              Couldn't connect
+              <div class="bootstrap-qrScreen">Go to QR</div>
+            </div>
+
+
+
+            <div class="screen invalid">
+              Invalid or expired session
+              <div class="bootstrap-qrScreen">Go to QR</div>
+            </div>
+
+            </div>
+          </div>
+            
         </div>
         <script type="module" src="bootstrap.js"></script>
         <link

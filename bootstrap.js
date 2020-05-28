@@ -17,6 +17,9 @@ function insertStyle(url) {
 }
 
 window.cronusLinkBootstrap = {
+  setScreen: function(screen) {
+    document.getElementById("bootstrap-screens").dataset.screen = screen
+  },
   getHashData: function () {
     try {
       if (window.location.hash && window.location.hash.length > 1) {
@@ -88,6 +91,7 @@ window.cronusLinkBootstrap = {
 
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips) {
+      window.cronusLinkBootstrap.setScreen("cantconnect")
       for(let i = 0; i < info.ips.length; i++) {
         var version = false
         try {
@@ -120,8 +124,7 @@ window.cronusLinkBootstrap = {
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
-      window.location.href = "https://cronus.link/#allowHTTPS"
-      return false
+      window.cronusLinkBootstrap.setScreen("cantconnect")
     }
   }
 }
@@ -237,3 +240,7 @@ function tick() {
 document.querySelector("#qrStart").addEventListener("click", function () {
   startScanner()
 })
+document.querySelector(".bootstrap-qrScreen").addEventListener("click", function () {
+  window.location.href = "https://cronus.link/#allowHTTPS"
+})
+
