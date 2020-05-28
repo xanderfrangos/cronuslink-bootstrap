@@ -87,8 +87,14 @@ window.cronusLinkBootstrap = {
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips) {
       for(let i = 0; i < info.ips.length; i++) {
-        var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v")
-        var version = await response.json()
+        var version = false
+        try {
+          var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v")
+          version = await response.json()
+        } catch(e) {
+          console.log("Couldn't connect to IP:", e)
+        }
+        
         console.log(info.ips[i] + ":", version)
         if(version) {
           info.ip = info.ips[i]
@@ -96,7 +102,7 @@ window.cronusLinkBootstrap = {
       }
     }
 
-    if (!window.cronusLinkBootstrap.started && info.ips) {
+    if (!window.cronusLinkBootstrap.started && info.ip) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
