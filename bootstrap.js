@@ -69,7 +69,7 @@ window.cronusLinkBootstrap = {
     localStorage.setItem('invalidSession', 1)
     localStorage.removeItem('connectionInfo')
     localStorage.removeItem('games')
-    window.location.href = "https://cronus.link/#allowHTTPS"
+    window.location.href = "http://cronus.link/"
     return true
   },
   clearInvalid: function () {
