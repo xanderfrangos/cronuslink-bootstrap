@@ -120,6 +120,10 @@
       font-size: 18px;
       line-height: 1.4;
     }
+
+    #bootstrap span {
+      display: inline-block;
+    }
     #bootstrap .button {
       display: block;
       background: #ddd;
@@ -130,11 +134,9 @@
       font-weight: 600;
       border-radius: 5px;
     }
-
-    #bootstrap span {
-      display: inline-block;
+    #bootstrap .button + .button {
+      margin-top: 15px;
     }
-
     #bootstrap .button:active {
       background: #ccc;
     }
@@ -194,9 +196,7 @@
         <div class="bootstrap-qrScreen button">Scan New QR Code</div>
       </div>
 
-
     </div>
-
   </div>
   <script type="module" src="bootstrap.js"></script>
   <link
