@@ -77,6 +77,8 @@ window.cronusLinkBootstrap = {
       session: null
     }
 
+    window.cronusLinkBootstrap.setScreen("loading")
+
     var savedInfo = window.cronusLinkBootstrap.getConnection()
     var info = defaultInfo
     if (savedInfo) {
@@ -92,8 +94,7 @@ window.cronusLinkBootstrap = {
     }
 
     // If a list of IPs was provided, scan them to see if a valid server is available
-    if(info.ips) {
-      window.cronusLinkBootstrap.setScreen("loading")
+    if(info.ips && info.ips.length > 0) {
       for(let i = 0; i < info.ips.length; i++) {
         var version = false
         try {
