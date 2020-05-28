@@ -49,6 +49,7 @@ window.cronusLinkBootstrap = {
     }
   },
   setConnection: function (info) {
+    console.log("Storing connection info:", info)
     window.cronusLinkBootstrap.connectionInfo = info
     return localStorage.setItem('denServer', JSON.stringify(info))
   },
