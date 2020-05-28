@@ -98,6 +98,7 @@ window.cronusLinkBootstrap = {
         console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
         if(version) {
           info.ip = info.ips[i]
+          console.log("WORKING IP:", info)
         } else {
           // Couldn't find a working IP
           window.location.href = "https://cronus.link/#allowHTTPS"
