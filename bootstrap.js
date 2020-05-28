@@ -95,14 +95,18 @@ window.cronusLinkBootstrap = {
 
     // If a list of IPs was provided, scan them to see if a valid server is available
     if(info.ips && info.ips.length > 0) {
+      var awaitArray = []
+      for(let i = 0; i < info.ips.length; i++) {
+        var response = new Promise((resolve, reject) => {
+          setTimeout(reject, 6000)
+          fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(result => resolve(result)).catch(err => reject(false))
+        })
+        awaitArray.push(response)
+      }
       for(let i = 0; i < info.ips.length; i++) {
         var version = false
         try {
-          var response = await new Promise((resolve, reject) => {
-            setTimeout(reject, 3000)
-            fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(result => resolve(result))
-          })
-          version = await response.json()
+          version = await awaitArray[i].json()
         } catch(e) {
           console.log("Couldn't connect to IP:", e)
         }
@@ -116,7 +120,7 @@ window.cronusLinkBootstrap = {
       // One IP was provided. Let's test it.
       try {
         var IPResponse = await new Promise((resolve, reject) => {
-          setTimeout(reject, 3000)
+          setTimeout(reject, 6000)
           fetch("http://" + info.ip + ":" + info.port + "/v").then(result => resolve(result))
         })
         var IPVersion = await IPResponse.json()
