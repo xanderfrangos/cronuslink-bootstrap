@@ -111,6 +111,22 @@ window.cronusLinkBootstrap = {
           info.ip = info.ips[i]
         }
       }
+    } else if(info.ip) {
+      // One IP was provided. Let's test it.
+      try {
+        var IPResponse = await new Promise((resolve, reject) => {
+          setTimeout(reject, 3000)
+          fetch("http://" + info.ip + ":" + info.port + "/v").then(result => resolve(result))
+        })
+        IPVersion = await IPResponse.json()
+        if(!IPVersion) {
+          throw("Invalid response from CL server.")
+        }
+      } catch(e) {
+        info.ip = null
+        console.log("Couldn't connect to requested IP.", e)
+        return false
+      }
     }
 
     if (!window.cronusLinkBootstrap.started && info.ip) {
