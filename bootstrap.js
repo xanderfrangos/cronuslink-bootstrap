@@ -108,6 +108,7 @@ window.cronusLinkBootstrap = {
     }
 
     if (!window.cronusLinkBootstrap.started && info.ip) {
+      console.log("Trying connect", info)
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
