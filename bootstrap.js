@@ -93,8 +93,8 @@ window.cronusLinkBootstrap = {
       var version = false
       for(let i = 0; i < info.ips.length; i++) {
         try {
-          var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v")
-          version = await response.json()
+          var response = await fetch("http://" + info.ips[i] + ":" + info.port + "/v").catch(e => console.log("Fetch failed for " + info.ips[i]))
+          version = await response.json().catch(e => console.log("JSON failed for " + info.ips[i]))
         } catch(e) {
           console.log("Couldn't connect to IP:", e)
         }
