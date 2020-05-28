@@ -124,8 +124,8 @@ window.cronusLinkBootstrap = {
           throw("Invalid response from CL server.")
         }
       } catch(e) {
-        info.ip = null
         console.log("Couldn't connect to requested IP.", e)
+        window.cronusLinkBootstrap.setScreen("cant-connect")
         return false
       }
     }
