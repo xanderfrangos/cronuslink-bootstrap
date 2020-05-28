@@ -96,7 +96,7 @@ window.cronusLinkBootstrap = {
       }
     }
 
-    if (!window.cronusLinkBootstrap.started && info.ip) {
+    if (!window.cronusLinkBootstrap.started && info.ips) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
