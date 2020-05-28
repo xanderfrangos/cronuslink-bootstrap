@@ -66,6 +66,7 @@ window.cronusLinkBootstrap = {
     }
   },
   connectionInfo: {},
+  lastAttemptedConnection: false,
   started: false,
   connect: async function (providedInfo = {}) {
     var defaultInfo = {
@@ -82,9 +83,10 @@ window.cronusLinkBootstrap = {
       info = Object.assign(info, savedInfo)
     }
     info = Object.assign(info, providedInfo)
+    window.cronusLinkBootstrap.lastAttemptedConnection = Object.assign({}, info)
 
     // If no info and HTTP, switch to HTTPS for camera
-    if(!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:") {
+    if(!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:" && window.location.hostname != "localhost") {
       window.location.href = "https://cronus.link/#allowHTTPS"
       return false
     }
@@ -124,7 +126,12 @@ window.cronusLinkBootstrap = {
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
-      window.cronusLinkBootstrap.setScreen("cantconnect")
+      if(!savedInfo && !window.cronusLinkBootstrap.getConnection()) {
+        window.cronusLinkBootstrap.setScreen("no-server")
+      } else {
+        window.cronusLinkBootstrap.setScreen("cant-connect")
+      }
+      
     }
   }
 }
@@ -137,6 +144,7 @@ if(window.location.hash != "#allowHTTPS") {
   window.cronusLinkBootstrap.connect(connectionInfo)
 } else {
   window.cronusLinkBootstrap.setScreen("qr")
+  startScanner()
 }
 
 // QR Scanner
@@ -175,16 +183,14 @@ function startScanner() {
     requestAnimationFrame(tick);
   });
 }
-
+window.cronusLinkBootstrap.startScanner = startScanner
 
 
 function tick() {
   if (scannerDone) return false;
-  loadingMessage.innerText = "Loading camera stream..."
   if (video.readyState === video.HAVE_ENOUGH_DATA) {
     loadingMessage.hidden = true;
     canvasElement.hidden = false;
-    outputContainer.hidden = false;
 
     canvasElement.height = video.videoHeight;
     canvasElement.width = video.videoWidth;
@@ -198,9 +204,6 @@ function tick() {
       drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
       drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
       drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
-      outputMessage.hidden = true;
-      outputData.parentElement.hidden = false;
-      outputData.innerText = code.data;
       console.log(code.data)
       if (code.data.indexOf("#") === -1) {
         // Invalid code
@@ -231,23 +234,25 @@ function tick() {
         }
 
       }
-    } else {
-      outputMessage.hidden = false;
-      outputData.parentElement.hidden = true;
     }
   }
   requestAnimationFrame(tick);
 }
 
-
-document.querySelector("#qrStart").addEventListener("click", function () {
-  startScanner()
+document.querySelectorAll(".bootstrap-qrScreen").forEach(function(button) {
+  button.addEventListener("click", function () {
+    if(window.location.protocol != "https" && window.location.hostname != "localhost") {
+      window.location.href = "https://cronus.link/#allowHTTPS"
+    } else {
+      window.cronusLinkBootstrap.setScreen("qr")
+      startScanner()
+    }
+  })
 })
-document.querySelector(".bootstrap-qrScreen").addEventListener("click", function () {
-  if(window.location.protocol != "https") {
-    window.location.href = "https://cronus.link/#allowHTTPS"
-  } else {
-    window.cronusLinkBootstrap.setScreen("qr")
-  }
+
+document.querySelectorAll(".bootstrap-retry").forEach(function(button) {
+  button.addEventListener("click", function () {
+    window.cronusLinkBootstrap.connect(window.cronusLinkBootstrap.lastAttemptedConnection)
+  })
 })
 

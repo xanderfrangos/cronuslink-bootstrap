@@ -3,7 +3,7 @@
 
 <head>
   <script>
-    if (window.location.host != "localhost" && window.location.protocol === "https:" && window.location.hash.indexOf("allowHTTPS") === -1) window.location.href = window.location.href.replace("https:", "http:");
+    if (window.location.hostname != "localhost" && window.location.protocol === "https:" && window.location.hash.indexOf("allowHTTPS") === -1) window.location.href = window.location.href.replace("https:", "http:");
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, user-scalable=no" />
@@ -14,33 +14,43 @@
   <style>
     body {
       position: relative;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: "Red Hat Display", Arial, Helvetica, sans-serif;
       user-select: none;
     }
 
-    #loadingMessage {
-      text-align: center;
-      padding: 40px;
-      background-color: #eee;
+    #bootstrap #loadingMessage {
+
     }
 
-    #canvas {
+    #bootstrap #canvas {
       width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
     }
 
-    #output {
-      margin-top: 20px;
-      background: #eee;
-      padding: 10px;
-      padding-bottom: 0;
+    #bootstrap .canvas-wrap {
+      position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+    #bootstrap #output {
+      max-width: 360px;
+      margin: auto;
     }
 
-    #output div {
-      padding-bottom: 10px;
+    #bootstrap #output div {
       word-wrap: break-word;
     }
 
-    #noQRFound {
+    #bootstrap #noQRFound {
       text-align: center;
     }
 
@@ -50,6 +60,8 @@
       left: 0;
       width: 100%;
       height: 100%;
+      box-sizing: border-box;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -58,16 +70,19 @@
       overflow: auto;
     }
 
-    .screen {
+    #bootstrap .screen {
       max-width: 640px;
       display: none;
+      font-size: 18px;
+      text-align: center;
+      width: 100%;
+      line-height: 1.25;
+      animation: bootstrapScreenIn 0.9s cubic-bezier(.305,.415,.02,1);
     }
-
-    #qrStart {
-      background: black;
-      color: white;
-      display: block;
-      padding: 20px;
+    @keyframes bootstrapScreenIn {
+      0% { opacity: 0; transform: scale(0.96); }
+      40% { opacity: 1; }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     #bootstrap.done {
@@ -82,11 +97,52 @@
       display: block;
     }
 
-    #bootstrap-screens[data-screen="invalid"] .screen.qr {
-      invalidsplay: block;
+    #bootstrap-screens[data-screen="invalid"] .screen.invalid {
+      display: block;
     }
 
-    #bootstrap-screens[data-screen="cantconnect"] .screen.cantconnect {
+    #bootstrap-screens[data-screen="cant-connect"] .screen.cant-connect {
+      display: block;
+    }
+    #bootstrap-screens[data-screen="no-server"] .screen.no-server {
+      display: block;
+    }
+    #bootstrap .title {
+      font-size: 26px;
+      font-weight: 600;
+      margin-top: 30px;
+    }
+    #bootstrap .body {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+    #bootstrap .body.smaller {
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    #bootstrap .button {
+      display: block;
+      background: #ddd;
+      padding: 16px;
+      text-align: center;
+      line-height: 1;
+      margin-top: 30px;
+      font-weight: 600;
+      border-radius: 5px;
+    }
+
+    #bootstrap span {
+      display: inline-block;
+    }
+
+    #bootstrap .button:active {
+      background: #ccc;
+    }
+
+    #bootstrap .logo {
+      width: 250px;
+      height: auto;
+      margin: auto;
       display: block;
     }
   </style>
@@ -99,31 +155,43 @@
     <div id="bootstrap-screens">
 
       <div class="screen qr">
+        <img src="cronus-logo-text.jpg" class="logo" />
         <div id="qr">
-          <div id="loadingMessage">
-            <p>This device is not currently linked to a PC. Please start the QR scanner below with the QR code generated on your PC's Cronus Link app.</p>
-            <div id="qrStart">Scan QR Code</div>
-          </div>
-          <canvas id="canvas" hidden></canvas>
-          <div id="output" hidden>
-            <div id="outputMessage">No QR code detected.</div>
-            <div hidden><b>QR code detected</b> <span style="display:none" id="outputData"></span></div>
+          <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
+          <div id="output">
+            <div class="title">Connect to server</div>
+            <div class="body">Please scan the QR code provided by the <span>Cronus Link server.</span></div>
           </div>
         </div>
       </div>
 
-      <div class="screen loading">
-        Loading...
+      <div class="screen no-server">
+        <img src="cronus-logo-text.jpg" class="logo" />
+          <div id="loadingMessage">
+            <div class="title">Get connected</div>
+            <div class="body smaller">This device is not currently linked to a PC. Please start the QR scanner below with the QR code generated on your PC's <span>Cronus Link app.</span></div>
+            <div class="bootstrap-qrScreen button">Scan QR Code</div>
+          </div>
       </div>
 
-      <div class="screen cantconnect">
-        Couldn't connect
-        <div class="bootstrap-qrScreen">Go to QR</div>
+      <div class="screen loading">
+        <div class="loading-icon"></div>
+        <div class="title">Connecting...</div>
+      </div>
+
+      <div class="screen cant-connect">
+        <img src="cronus-logo-text.jpg" class="logo" />
+        <div class="title">Couldn't connect</div>
+        <div class="body">We weren't able to connect to the server. Please make sure the Cronus Link server is running and is on the same network <span>as this device.</span></div>
+        <div class="bootstrap-retry button">Retry</div>
+        <div class="bootstrap-qrScreen button">Scan New QR Code</div>
       </div>
 
       <div class="screen invalid">
-        Invalid or expired session
-        <div class="bootstrap-qrScreen">Go to QR</div>
+        <img src="cronus-logo-text.jpg" class="logo" />
+        <div class="title">Invalid or expired session</div>
+        <div class="body">The code you used to connect is not valid. Please reconnect <span>to your server.</span></div>
+        <div class="bootstrap-qrScreen button">Scan New QR Code</div>
       </div>
 
 
