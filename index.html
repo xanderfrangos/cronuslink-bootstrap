@@ -147,6 +147,38 @@
       margin: auto;
       display: block;
     }
+    #bootstrap .loading-icon {
+      position: relative;
+      width: 80px;
+      height: 10px;
+      margin: auto;
+    }
+    #bootstrap .loading-icon:before, #bootstrap .loading-icon:after, #bootstrap .loading-icon .m {
+      content: ' ';
+      display: block;
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: rgba(0, 0, 0, 1);
+      border-radius: 20px;
+      top: 0px;
+      left: -12px;
+      transform: translateX(0px);
+      animation: bootstrapLoading 2s infinite alternate ease;
+    }
+    #bootstrap .loading-icon .m {
+      animation-delay: 0.05s;
+      background: #80a1ff;
+    }
+    #bootstrap .loading-icon:before {
+      animation-delay: 0.1s;
+      background: #b5c8ff;
+    }
+    @keyframes bootstrapLoading {
+      0% { transform: translateX(0px); }
+      50% { transform: translateX(80px); }
+      100% { transform: translateX(0px); }
+    }
   </style>
   <script src="./jsQR.js"></script>
 </head>
@@ -177,8 +209,8 @@
       </div>
 
       <div class="screen loading">
-        <div class="loading-icon"></div>
-        <div class="title">Connecting...</div>
+        <div class="loading-icon"><div class="m"></div></div>
+        <div class="title">Connecting</div>
       </div>
 
       <div class="screen cant-connect">
