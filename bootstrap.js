@@ -17,7 +17,7 @@ function insertStyle(url) {
 }
 
 window.cronusLinkBootstrap = {
-  setScreen: function(screen) {
+  setScreen: function (screen) {
     document.getElementById("bootstrap-screens").dataset.screen = screen
   },
   getHashData: function () {
@@ -25,7 +25,7 @@ window.cronusLinkBootstrap = {
       if (window.location.hash && window.location.hash.length > 1) {
         return window.cronusLinkBootstrap.decodeHash(window.location.hash)
       } else {
-        return null
+        return false
       }
     } catch (e) {
       console.error(e)
@@ -53,17 +53,38 @@ window.cronusLinkBootstrap = {
   },
   setConnection: function (infoIn) {
     var info = infoIn
-    if(info.ips) delete info.ips
+    if (info.ips) delete info.ips
     console.log("Storing connection info:", info)
     window.cronusLinkBootstrap.connectionInfo = info
-    return localStorage.setItem('denServer', JSON.stringify(info))
+    return localStorage.setItem('connectionInfo', JSON.stringify(info))
   },
   getConnection: function () {
     try {
-      return JSON.parse(localStorage.getItem('denServer'))
+      return JSON.parse(localStorage.getItem('connectionInfo'))
     } catch (e) {
       return null
     }
+  },
+  setInvalid: function () {
+    localStorage.setItem('invalidSession', 1)
+    localStorage.removeItem('connectionInfo')
+    localStorage.removeItem('games')
+    window.location.href = "https://cronus.link/#allowHTTPS"
+    return true
+  },
+  clearInvalid: function () {
+    localStorage.removeItem('invalidSession')
+    return true
+  },
+  isInvalid: function () {
+    return (localStorage.getItem('invalidSession') == 1 ? true : false)
+  },
+  resetConnection: function () {
+    localStorage.removeItem('connectionInfo')
+    localStorage.removeItem('games')
+    localStorage.removeItem('invalidSession')
+    window.location.href = "https://cronus.link/#allowHTTPS"
+    return true
   },
   connectionInfo: {},
   lastAttemptedConnection: false,
@@ -88,35 +109,36 @@ window.cronusLinkBootstrap = {
     window.cronusLinkBootstrap.lastAttemptedConnection = Object.assign({}, info)
 
     // If no info and HTTP, switch to HTTPS for camera
-    if(!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:" && window.location.hostname != "localhost") {
+    if (!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:" && window.location.hostname != "localhost") {
       window.location.href = "https://cronus.link/#allowHTTPS"
       return false
     }
 
     // If a list of IPs was provided, scan them to see if a valid server is available
-    if(info.ips && info.ips.length > 0) {
+    if (info.ips && info.ips.length > 0) {
       var awaitArray = []
-      for(let i = 0; i < info.ips.length; i++) {
+      for (let i = 0; i < info.ips.length; i++) {
         var response = new Promise((resolve, reject) => {
           setTimeout(reject, 6000)
           fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(result => resolve(result)).catch(err => reject(false))
         })
         awaitArray.push(response)
       }
-      for(let i = 0; i < info.ips.length; i++) {
+      for (let i = 0; i < info.ips.length; i++) {
         var version = false
         try {
-          version = await awaitArray[i].json()
-        } catch(e) {
+          version = await awaitArray[i]
+          version = await version.json()
+        } catch (e) {
           console.log("Couldn't connect to IP:", e)
         }
-        
+
         console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
-        if(version) {
+        if (version) {
           info.ip = info.ips[i]
         }
       }
-    } else if(info.ip) {
+    } else if (info.ip) {
       // One IP was provided. Let's test it.
       try {
         var IPResponse = await new Promise((resolve, reject) => {
@@ -124,10 +146,10 @@ window.cronusLinkBootstrap = {
           fetch("http://" + info.ip + ":" + info.port + "/v").then(result => resolve(result))
         })
         var IPVersion = await IPResponse.json()
-        if(!IPVersion) {
-          throw("Invalid response from CL server.")
+        if (!IPVersion) {
+          throw ("Invalid response from CL server.")
         }
-      } catch(e) {
+      } catch (e) {
         console.log("Couldn't connect to requested IP.", e)
         window.cronusLinkBootstrap.setScreen("cant-connect")
         return false
@@ -147,22 +169,32 @@ window.cronusLinkBootstrap = {
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
-      if(!savedInfo && !window.cronusLinkBootstrap.getConnection()) {
+      if (!savedInfo && !window.cronusLinkBootstrap.getConnection()) {
         window.cronusLinkBootstrap.setScreen("no-server")
       } else {
         window.cronusLinkBootstrap.setScreen("cant-connect")
       }
-      
+
     }
   }
 }
 
-if(window.location.hash != "#allowHTTPS") {
+if (window.cronusLinkBootstrap.isInvalid()) {
+  // If session was previously rejected, say so
+  window.cronusLinkBootstrap.setScreen("invalid")
+  window.cronusLinkBootstrap.clearInvalid()
+} else if (window.location.hash != "#allowHTTPS") {
   var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
-  var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
-  history.replaceState({}, document.title, ".") // Remove hash if it was used
-  
-  window.cronusLinkBootstrap.connect(connectionInfo)
+  if (hashData === null) {
+    // If hash is garbled, say so
+    window.cronusLinkBootstrap.setScreen("invalid")
+  } else {
+    // Hash is OK or not present
+    var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
+    history.replaceState({}, document.title, ".") // Remove hash if it was used
+
+    window.cronusLinkBootstrap.connect(connectionInfo)
+  }
 } else {
   window.cronusLinkBootstrap.setScreen("qr")
   startScanner()
@@ -234,7 +266,7 @@ function tick() {
           console.table(decoded)
           if (decoded && decoded.ips) {
             // Connect to server
-            if(window.location.protocol === "https:") {
+            if (window.location.protocol === "https:") {
               // Switch to HTTP for connection
               window.location.href = code.data
               return false;
@@ -260,9 +292,10 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-document.querySelectorAll(".bootstrap-qrScreen").forEach(function(button) {
+document.querySelectorAll(".bootstrap-qrScreen").forEach(function (button) {
+  window.cronusLinkBootstrap.clearInvalid()
   button.addEventListener("click", function () {
-    if(window.location.protocol != "https" && window.location.hostname != "localhost") {
+    if (window.location.protocol != "https" && window.location.hostname != "localhost") {
       window.location.href = "https://cronus.link/#allowHTTPS"
     } else {
       window.cronusLinkBootstrap.setScreen("qr")
@@ -271,7 +304,7 @@ document.querySelectorAll(".bootstrap-qrScreen").forEach(function(button) {
   })
 })
 
-document.querySelectorAll(".bootstrap-retry").forEach(function(button) {
+document.querySelectorAll(".bootstrap-retry").forEach(function (button) {
   button.addEventListener("click", function () {
     window.cronusLinkBootstrap.connect(window.cronusLinkBootstrap.lastAttemptedConnection)
   })
