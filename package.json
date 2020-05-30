@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Cronus Link web bootstrap",
   "scripts": {
-    "build": "del /q docs && parcel build src/index.html --out-dir docs --public-url ./ --experimental-scope-hoisting --no-source-maps",
+    "build": "del /q docs && parcel build src/index.html --out-dir docs --public-url ./ --experimental-scope-hoisting --no-source-maps && copy src\\CNAME docs\\CNAME",
     "start": "parcel src/index.html --port 3004 --out-dir cache"
   },
   "author": "xanderfrangos",
