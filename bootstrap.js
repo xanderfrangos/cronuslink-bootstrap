@@ -43,7 +43,9 @@ window.cronusLinkBootstrap = {
       var decoded = {
         isDev: arr[0],
         ips: arr[1],
-        session: arr[2]
+        session: arr[2],
+        port: arr[3],
+        remote: arr[4]
       }
       return decoded
     } catch (e) {
@@ -153,6 +155,24 @@ window.cronusLinkBootstrap = {
         console.log("Couldn't connect to requested IP.", e)
         window.cronusLinkBootstrap.setScreen("cant-connect")
         return false
+      }
+    }
+
+    let remoteValid = false
+    if(info.remote) {
+      // Remote (public) URL was provided. Let's test it.
+      try {
+        var remoteResponse = await new Promise((resolve, reject) => {
+          setTimeout(reject, 6000)
+          fetch("http://" + info.remote + "/v").then(result => resolve(result))
+        })
+        var remoteVersion = await remoteResponse.json()
+        if (!remoteVersion) {
+          throw ("Invalid response from CL server.")
+        }
+        remoteValid = true
+      } catch (e) {
+        console.log("Couldn't connect to remote URL.", e)
       }
     }
 
