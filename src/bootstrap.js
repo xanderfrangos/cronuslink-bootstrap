@@ -111,6 +111,10 @@ window.cronusLinkBootstrap = {
       info = Object.assign(info, savedInfo)
     }
     info = Object.assign(info, providedInfo)
+    
+    // Fix undefined port
+    info.port = (info.port ? info.port : 36411)
+
     window.cronusLinkBootstrap.lastAttemptedConnection = Object.assign({}, info)
 
     // If no info and HTTP, switch to HTTPS for camera
@@ -187,8 +191,8 @@ window.cronusLinkBootstrap = {
       window.cronusLinkBootstrap.setConnection(info)
       window.cronusLinkServer = info.ip
 
-      insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css')
-      insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js')
+      insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css?' + Date.now())
+      insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js?' + Date.now())
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
