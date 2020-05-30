@@ -191,7 +191,10 @@ window.cronusLinkBootstrap = {
       window.cronusLinkBootstrap.setConnection(info)
       window.cronusLinkServer = info.ip
 
-      insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css?' + Date.now())
+      insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css?')
+      if(info.isDev) {
+        insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.js?')
+      }
       insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js?' + Date.now())
       document.getElementById("bootstrap").classList.add("done")
     } else {
