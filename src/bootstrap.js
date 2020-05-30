@@ -1,3 +1,6 @@
+import jsQR from "jsqr";
+import 'regenerator-runtime/runtime'
+
 function insertScript(url) {
   var s = document.createElement('script');
   s.type = 'text/javascript';

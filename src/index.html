@@ -181,13 +181,12 @@
       100% { transform: translateX(0px); }
     }
   </style>
-  <script src="./jsQR.js"></script>
 </head>
 
 <body>
   <div id="app"></div>
   <div id="bootstrap">
-    <div id="bootstrap-screens">
+    <div id="bootstrap-screens" data-screen="loading">
 
       <div class="screen qr">
         <img src="cronus-logo-text.jpg" class="logo" />
@@ -231,7 +230,7 @@
 
     </div>
   </div>
-  <script type="module" src="bootstrap.js"></script>
+  <script src="bootstrap.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap"
     rel="stylesheet">

@@ -1,0 +1,21 @@
+{
+  "name": "cronuslink-bootstrap",
+  "version": "0.0.1",
+  "description": "Cronus Link web bootstrap",
+  "scripts": {
+    "build": "del /q docs && parcel build src/index.html --out-dir docs --public-url ./ --experimental-scope-hoisting --no-source-maps",
+    "start": "parcel src/index.html --port 3004 --out-dir cache"
+  },
+  "author": "xanderfrangos",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "jsqr": "^1.3.1",
+    "parcel-plugin-inlinesvg": "^0.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.1",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.5"
+  }
+}
