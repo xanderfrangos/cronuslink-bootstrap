@@ -44,7 +44,7 @@ window.cronusLinkBootstrap = {
       var arr = atob(str).split("|")
       arr[1] = arr[1].split(",")
       var decoded = {
-        isDev: arr[0],
+        isDev: arr[0] * 1,
         ips: arr[1],
         session: arr[2],
         port: arr[3],
