@@ -144,6 +144,7 @@ window.cronusLinkBootstrap = {
           fetch("http://" + info.ip + ":" + info.port + "/v").then(result => resolve(result))
         })
         var IPVersion = await IPResponse.json()
+        console.log(IPVersion)
         if (!IPVersion) {
           throw ("Invalid response from CL server.")
         } else {
