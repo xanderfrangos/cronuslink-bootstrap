@@ -1,25 +1,13 @@
 import jsQR from "jsqr";
 import 'regenerator-runtime/runtime'
 
-function insertScript(url) {
-  var s = document.createElement('script');
-  s.type = 'text/javascript';
-  s.async = true;
-  s.src = url;
-  var x = document.getElementsByTagName('head')[0];
-  x.appendChild(s);
-}
-
-function insertStyle(url) {
-  var s = document.createElement('link');
-  s.type = 'text/css';
-  s.href = url;
-  s.rel = "stylesheet"
-  var x = document.getElementsByTagName('head')[0];
-  x.appendChild(s);
-}
-
 window.cronusLinkBootstrap = {
+  bootstrapVer: 1,
+  serverVer: {
+    name: 'cronuslink',
+    server: false,
+    api: false
+},
   setScreen: function (screen) {
     document.getElementById("bootstrap-screens").dataset.screen = screen
   },
@@ -145,6 +133,7 @@ window.cronusLinkBootstrap = {
         console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
         if (version) {
           info.ip = info.ips[i]
+          window.cronusLinkBootstrap.serverVer = version
         }
       }
     } else if (info.ip) {
@@ -176,6 +165,8 @@ window.cronusLinkBootstrap = {
         var remoteVersion = await remoteResponse.json()
         if (!remoteVersion) {
           throw ("Invalid response from CL server.")
+        } else {
+          remoteValid = remoteVersion
         }
         remoteValid = true
       } catch (e) {
@@ -236,9 +227,6 @@ var video = document.createElement("video");
 var canvasElement = document.getElementById("canvas");
 var canvas = canvasElement.getContext("2d");
 var loadingMessage = document.getElementById("loadingMessage");
-var outputContainer = document.getElementById("output");
-var outputMessage = document.getElementById("outputMessage");
-var outputData = document.getElementById("outputData");
 var scannerDone = false
 
 function drawLine(begin, end, color) {
@@ -322,6 +310,27 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
+
+
+
+function insertScript(url) {
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = url;
+  var x = document.getElementsByTagName('head')[0];
+  x.appendChild(s);
+}
+
+function insertStyle(url) {
+  var s = document.createElement('link');
+  s.type = 'text/css';
+  s.href = url;
+  s.rel = "stylesheet"
+  var x = document.getElementsByTagName('head')[0];
+  x.appendChild(s);
+}
+
 document.querySelectorAll(".bootstrap-qrScreen").forEach(function (button) {
   window.cronusLinkBootstrap.clearInvalid()
   button.addEventListener("click", function () {
@@ -339,4 +348,3 @@ document.querySelectorAll(".bootstrap-retry").forEach(function (button) {
     window.cronusLinkBootstrap.connect(window.cronusLinkBootstrap.lastAttemptedConnection)
   })
 })
-
