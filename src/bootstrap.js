@@ -146,6 +146,8 @@ window.cronusLinkBootstrap = {
         var IPVersion = await IPResponse.json()
         if (!IPVersion) {
           throw ("Invalid response from CL server.")
+        } else {
+          window.cronusLinkBootstrap.serverVer = IPVersion
         }
       } catch (e) {
         console.log("Couldn't connect to requested IP.", e)
@@ -155,7 +157,7 @@ window.cronusLinkBootstrap = {
     }
 
     let remoteValid = false
-    if(info.remote) {
+    if(!info.ip && info.remote) {
       // Remote (public) URL was provided. Let's test it.
       try {
         var remoteResponse = await new Promise((resolve, reject) => {
@@ -167,6 +169,7 @@ window.cronusLinkBootstrap = {
           throw ("Invalid response from CL server.")
         } else {
           remoteValid = remoteVersion
+          window.cronusLinkBootstrap.serverVer = remoteVersion
         }
         remoteValid = true
       } catch (e) {
