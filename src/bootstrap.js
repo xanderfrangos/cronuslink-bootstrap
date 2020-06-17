@@ -352,3 +352,7 @@ document.querySelectorAll(".bootstrap-retry").forEach(function (button) {
     window.cronusLinkBootstrap.connect(window.cronusLinkBootstrap.lastAttemptedConnection)
   })
 })
+
+document.querySelector("#bootstrap-menu svg").addEventListener("click", (e) => {
+  document.querySelector("#bootstrap-menu").classList.toggle("show")
+})
