@@ -181,7 +181,7 @@ window.cronusLinkBootstrap = {
       try {
         var remoteResponse = await new Promise((resolve, reject) => {
           setTimeout(reject, 6000)
-          fetch("http://" + info.remote + "/v").then(result => resolve(result))
+          fetch(window.location.protocol + "//" + info.remote + "/v").then(result => resolve(result))
         })
         var remoteVersion = await remoteResponse.json()
         if (!remoteVersion) {
