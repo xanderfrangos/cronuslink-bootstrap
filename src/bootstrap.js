@@ -311,12 +311,6 @@ function tick() {
           var decoded = window.cronusLinkBootstrap.decodeHash(code.data)
           console.table(decoded)
           if (decoded && decoded.ips) {
-            // Connect to server
-            if (window.location.protocol === "https:") {
-              // Switch to HTTP for connection
-              window.location.href = code.data
-              return false;
-            }
             window.cronusLinkBootstrap.connect(decoded)
             // Stop loop
             scannerDone = true
@@ -362,7 +356,7 @@ function insertStyle(url) {
 document.querySelectorAll(".bootstrap-qrScreen").forEach(function (button) {
   window.cronusLinkBootstrap.clearInvalid()
   button.addEventListener("click", function () {
-    if (window.location.protocol != "https" && window.location.hostname != "localhost") {
+    if (window.location.protocol != "https:" && window.location.hostname != "localhost") {
       window.location.href = "https://cronus.link/"
     } else {
       window.cronusLinkBootstrap.setScreen("qr")
