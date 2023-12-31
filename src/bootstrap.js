@@ -35,7 +35,7 @@ window.cronusLinkBootstrap = {
         isDev: arr[0] * 1,
         ips: arr[1],
         session: arr[2],
-        port: arr[3],
+        hostID: arr[3],
         remote: arr[4] ?? "api.cronus.link"
       }
       return decoded
@@ -63,7 +63,7 @@ window.cronusLinkBootstrap = {
       const response = await fetch(`${window.location.protocol}//${infoIn.ip}/auth`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ deviceType: "Web", deviceName: "WebBootstrap", session: infoIn.session, hostID: "test1"})
+        body: JSON.stringify({ deviceType: "Web", deviceName: "WebBootstrap", session: infoIn.session, hostID: infoIn.hostID})
       })
       const json = await response.json()
       if(json.status === 200) return json.data;
@@ -71,9 +71,6 @@ window.cronusLinkBootstrap = {
     } catch(e) {
       return false
     }
-  },
-  testConnection: function(addr) {
-
   },
   setInvalid: function () {
     localStorage.setItem('invalidSession', 1)
@@ -104,6 +101,7 @@ window.cronusLinkBootstrap = {
       ip: "api.cronus.link",
       ips: [],
       port: 36411,
+      hostID: null,
       isDev: false,
       session: null,
       remote: "api.cronus.link"
