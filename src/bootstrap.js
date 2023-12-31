@@ -314,8 +314,7 @@ function tick() {
       } else {
         try {
           var decoded = window.cronusLinkBootstrap.decodeHash(code.data)
-          var connectionInfo = (hashData && typeof hashData === "object" ? hashData : {})
-          console.table(connectionInfo)
+          console.table(decoded)
           if (decoded && decoded.ips) {
             // Stop loop
             scannerDone = true
@@ -326,7 +325,7 @@ function tick() {
               track.stop();
             });
             video.srcObject = null;
-            window.cronusLinkBootstrap.connect(connectionInfo)
+            window.cronusLinkBootstrap.connect(decoded)
           }
         } catch (e) {
           console.error(e)
