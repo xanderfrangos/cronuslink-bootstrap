@@ -36,7 +36,7 @@ window.cronusLinkBootstrap = {
         ips: arr[1],
         session: arr[2],
         port: arr[3],
-        remote: arr[4]
+        remote: arr[4] ?? "api.cronus.link"
       }
       return decoded
     } catch (e) {
@@ -58,11 +58,28 @@ window.cronusLinkBootstrap = {
       return null
     }
   },
+  doAuth: async function(infoIn) {
+    try {
+      const response = await fetch(`${window.location.protocol}//${infoIn.ip}/auth`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({ deviceType: "Web", deviceName: "WebBootstrap", session: infoIn.session, hostID: "test1"})
+      })
+      const json = await response.json()
+      if(json.status === 200) return json.data;
+      return false
+    } catch(e) {
+      return false
+    }
+  },
+  testConnection: function(addr) {
+
+  },
   setInvalid: function () {
     localStorage.setItem('invalidSession', 1)
     localStorage.removeItem('connectionInfo')
     localStorage.removeItem('games')
-    window.location.href = "http://cronus.link/"
+    window.location.href = `${window.location.origin}`
     return true
   },
   clearInvalid: function () {
@@ -76,7 +93,7 @@ window.cronusLinkBootstrap = {
     localStorage.removeItem('connectionInfo')
     localStorage.removeItem('games')
     localStorage.removeItem('invalidSession')
-    window.location.href = "https://cronus.link/#allowHTTPS"
+    window.location.href = `${window.location.origin}`
     return true
   },
   connectionInfo: {},
@@ -88,7 +105,8 @@ window.cronusLinkBootstrap = {
       ips: [],
       port: 36411,
       isDev: false,
-      session: null
+      session: null,
+      remote: "api.cronus.link"
     }
 
     window.cronusLinkBootstrap.setScreen("loading")
@@ -106,8 +124,8 @@ window.cronusLinkBootstrap = {
     window.cronusLinkBootstrap.lastAttemptedConnection = Object.assign({}, info)
 
     // If no info and HTTP, switch to HTTPS for camera
-    if (!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:" && window.location.hostname != "localhost") {
-      window.location.href = "https://cronus.link/#allowHTTPS"
+    if (!info.ip && (!info.ips || info.ips.length == 0) && window.location.protocol === "http:" && window.location.hostname == "cronus.link") {
+      window.location.href = "https://cronus.link/"
       return false
     }
 
@@ -117,7 +135,7 @@ window.cronusLinkBootstrap = {
       for (let i = 0; i < info.ips.length; i++) {
         var response = new Promise((resolve, reject) => {
           setTimeout(reject, 6000)
-          fetch("http://" + info.ips[i] + ":" + info.port + "/v").then(result => resolve(result)).catch(err => reject(false))
+          fetch(`${window.location.protocol}//` + info.ips[i] + "/v").then(result => resolve(result)).catch(err => reject(false))
         })
         awaitArray.push(response)
       }
@@ -130,7 +148,7 @@ window.cronusLinkBootstrap = {
           console.log("Couldn't connect to IP:", e)
         }
 
-        console.log("http://" + info.ips[i] + ":" + info.port + "/v : ", version)
+        console.log(`${window.location.protocol}//` + info.ips[i] + "/v : ", version)
         if (version) {
           info.ip = info.ips[i]
           window.cronusLinkBootstrap.serverVer = version
@@ -141,7 +159,7 @@ window.cronusLinkBootstrap = {
       try {
         var IPResponse = await new Promise((resolve, reject) => {
           setTimeout(reject, 6000)
-          fetch("http://" + info.ip + ":" + info.port + "/v").then(result => resolve(result))
+          fetch(`${window.location.protocol}//` + info.ip + "/v").then(result => resolve(result))
         })
         var IPVersion = await IPResponse.json()
         console.log(IPVersion)
@@ -173,24 +191,28 @@ window.cronusLinkBootstrap = {
           window.cronusLinkBootstrap.serverVer = remoteVersion
         }
         remoteValid = true
+        info.isDev = false
       } catch (e) {
         console.log("Couldn't connect to remote URL.", e)
       }
     }
 
-    if (!window.cronusLinkBootstrap.started && info.ip) {
+    const roomID = await window.cronusLinkBootstrap.doAuth(info)
+
+    if (roomID && !window.cronusLinkBootstrap.started && info.ip) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
+      info.roomID = roomID
       window.cronusLinkBootstrap.started = true
       window.cronusLinkBootstrap.setConnection(info)
       window.cronusLinkServer = info.ip
 
-      insertStyle('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.css?')
+      insertStyle(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app-merged.css`)
       if(info.isDev) {
-        insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app-merged.js?')
+        insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app-merged.js`)
       }
-      insertScript('http://' + info.ip + ':' + (info.isDev ? "3002" : info.port) + '/app.js?' + Date.now())
+      insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app.js`)
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
@@ -339,7 +361,7 @@ document.querySelectorAll(".bootstrap-qrScreen").forEach(function (button) {
   window.cronusLinkBootstrap.clearInvalid()
   button.addEventListener("click", function () {
     if (window.location.protocol != "https" && window.location.hostname != "localhost") {
-      window.location.href = "https://cronus.link/#allowHTTPS"
+      window.location.href = "https://cronus.link/"
     } else {
       window.cronusLinkBootstrap.setScreen("qr")
       startScanner()
