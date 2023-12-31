@@ -230,7 +230,9 @@ if (window.cronusLinkBootstrap.isInvalid()) {
   // If session was previously rejected, say so
   window.cronusLinkBootstrap.setScreen("invalid")
   window.cronusLinkBootstrap.clearInvalid()
-} else if (window.location.hash != "#qr") {
+} else if(window.cronusLinkBootstrap.getConnection()) {
+  window.cronusLinkBootstrap.connect(window.cronusLinkBootstrap.getConnection())
+} else if (window.location.hash != "#qr" && window.cronusLinkBootstrap.getHashData()) {
   var hashData = window.cronusLinkBootstrap.getHashData() // Get info from QR code
   if (hashData === null) {
     // If hash is garbled, say so
