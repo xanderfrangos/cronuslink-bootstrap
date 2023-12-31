@@ -101,7 +101,7 @@ window.cronusLinkBootstrap = {
   started: false,
   connect: async function (providedInfo = {}) {
     var defaultInfo = {
-      ip: null,
+      ip: "api.cronus.link",
       ips: [],
       port: 36411,
       isDev: false,
@@ -133,11 +133,15 @@ window.cronusLinkBootstrap = {
     if (info.ips && info.ips.length > 0) {
       var awaitArray = []
       for (let i = 0; i < info.ips.length; i++) {
-        var response = new Promise((resolve, reject) => {
-          setTimeout(reject, 6000)
-          fetch(`${window.location.protocol}//` + info.ips[i] + "/v").then(result => resolve(result)).catch(err => reject(false))
-        })
-        awaitArray.push(response)
+        try {
+          var response = new Promise((resolve, reject) => {
+            setTimeout(reject, 6000)
+            fetch(`${window.location.protocol}//` + info.ips[i] + "/v").then(result => resolve(result)).catch(err => reject(false))
+          })
+          awaitArray.push(response)
+        } catch(e) {
+          console.log(e)
+        }
       }
       for (let i = 0; i < info.ips.length; i++) {
         var version = false
@@ -192,6 +196,7 @@ window.cronusLinkBootstrap = {
         }
         remoteValid = true
         info.isDev = false
+        info.ip = info.remote
       } catch (e) {
         console.log("Couldn't connect to remote URL.", e)
       }
