@@ -34,7 +34,7 @@ window.cronusLinkBootstrap = {
       var decoded = {
         isDev: arr[0] * 1,
         ips: arr[1],
-        session: arr[2],
+        authID: arr[2],
         hostID: arr[3],
         remote: arr[4] ?? "api.cronus.link"
       }
@@ -60,10 +60,10 @@ window.cronusLinkBootstrap = {
   },
   doAuth: async function(infoIn) {
     try {
-      const response = await fetch(`${window.location.protocol}//${infoIn.ip}/auth`, {
+      const response = await fetch(`${window.location.protocol}//${infoIn.ip}/auth/${infoIn.hostID}`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ deviceType: "Web", deviceName: "WebBootstrap", session: infoIn.session, hostID: infoIn.hostID})
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ deviceType: "Web", deviceName: "WebBootstrap", authID: infoIn.authID, authValue: infoIn.authValue})
       })
       const json = await response.json()
       if(json.status === 200) return json.data;
@@ -73,23 +73,23 @@ window.cronusLinkBootstrap = {
     }
   },
   setInvalid: function () {
-    localStorage.setItem('invalidSession', 1)
+    localStorage.setItem('invalidAuth', 1)
     localStorage.removeItem('connectionInfo')
     localStorage.removeItem('games')
     window.location.href = `${window.location.origin}`
     return true
   },
   clearInvalid: function () {
-    localStorage.removeItem('invalidSession')
+    localStorage.removeItem('invalidAuth')
     return true
   },
   isInvalid: function () {
-    return (localStorage.getItem('invalidSession') == 1 ? true : false)
+    return (localStorage.getItem('invalidAuth') == 1 ? true : false)
   },
   resetConnection: function () {
     localStorage.removeItem('connectionInfo')
     localStorage.removeItem('games')
-    localStorage.removeItem('invalidSession')
+    localStorage.removeItem('invalidAuth')
     window.location.href = `${window.location.origin}`
     return true
   },
@@ -103,7 +103,7 @@ window.cronusLinkBootstrap = {
       port: 36411,
       hostID: null,
       isDev: false,
-      session: null,
+      authID: null,
       remote: "api.cronus.link"
     }
 
@@ -200,22 +200,22 @@ window.cronusLinkBootstrap = {
       }
     }
 
-    const roomID = await window.cronusLinkBootstrap.doAuth(info)
-
-    if (roomID && !window.cronusLinkBootstrap.started && info.ip) {
+    const authResponse = await window.cronusLinkBootstrap.doAuth(info)
+    if (authResponse && !window.cronusLinkBootstrap.started && info.ip) {
 
       // Eventually we should make sure the server/JS/CSS can be found first.
 
-      info.roomID = roomID
+      info.roomID = authResponse.roomID
+      if(authResponse.authValue) info.authValue = authResponse.authValue
       window.cronusLinkBootstrap.started = true
       window.cronusLinkBootstrap.setConnection(info)
       window.cronusLinkServer = info.ip
 
-      insertStyle(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app-merged.css`)
+      insertStyle(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.css`)
       if(info.isDev) {
-        insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app-merged.js`)
+        insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.js`)
       }
-      insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${roomID}/app.js`)
+      insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app.js`)
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
@@ -230,7 +230,7 @@ window.cronusLinkBootstrap = {
 }
 
 if (window.cronusLinkBootstrap.isInvalid()) {
-  // If session was previously rejected, say so
+  // If authID was previously rejected, say so
   window.cronusLinkBootstrap.setScreen("invalid")
   window.cronusLinkBootstrap.clearInvalid()
 } else if(window.cronusLinkBootstrap.getConnection()) {
