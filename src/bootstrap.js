@@ -185,7 +185,7 @@ window.cronusLinkBootstrap = {
           setTimeout(reject, 6000)
           fetch(window.location.protocol + "//" + info.remote + "/v").then(result => resolve(result))
         })
-        var remoteVersion = await remoteResponse.json()
+        var remoteVersion = (await remoteResponse.json())?.data
         if (!remoteVersion) {
           throw ("Invalid response from CL server.")
         } else {
@@ -211,11 +211,16 @@ window.cronusLinkBootstrap = {
       window.cronusLinkBootstrap.setConnection(info)
       window.cronusLinkServer = info.ip
 
-      insertStyle(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.css`)
+      const hostVersion = await (await fetch(`${window.location.protocol}//${info.remote}/v/${authResponse.roomID}`)).json()
+      window.cronusLinkBootstrap.hostVer = hostVersion
+
+      const verString = `?${hostVersion.started}`
+
+      insertStyle(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.css${verString}`)
       if(info.isDev) {
-        insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.js`)
+        insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app-merged.js${verString}`)
       }
-      insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app.js`)
+      insertScript(`${window.location.protocol}//` + info.ip + (info.isDev ? "" : "") + `/proxy-assets/${info.roomID}/app.js${verString}`)
       document.getElementById("bootstrap").classList.add("done")
     } else {
       // Couldn't find a working IP
